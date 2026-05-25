@@ -1,0 +1,38 @@
+# mise pins the toolchain and exposes karnstack BYOX tasks.
+# Install mise first: https://mise.jdx.dev/getting-started.html
+#
+# Then from this directory:
+#   mise trust            # one-time, allow this config to run
+#   mise install          # installs Python 3.12 + creates .venv
+#   mise run setup        # installs the bloom package + pytest into .venv
+#   mise run stage 1      # runs the tests for stage 1
+#   mise run all          # runs every stage's tests
+#
+# Stage prefix:
+#   stage 1 -> test_stage01_*
+#   stage 2 -> test_stage02_*
+#   ...
+
+[tools]
+python = "3.14"
+
+[env]
+_.python.venv = { path = ".venv", create = true }
+
+[tasks.setup]
+description = "Install the bloom package in editable mode plus test deps."
+run = "pip install -e '.[test]'"
+
+[tasks.stage]
+description = "Run tests for one stage. Usage: mise run stage <n>"
+usage = '''
+arg "n" help="Stage number, 1 through 6."
+'''
+run = '''
+stage=$(printf 'stage%02d' "$usage_n")
+pytest -v -k "$stage" tests/
+'''
+
+[tasks.all]
+description = "Run tests for every stage."
+run = "pytest -v tests/"
