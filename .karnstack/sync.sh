@@ -39,12 +39,18 @@ declare -a FILES=(
   "pyproject.toml"
 )
 
-mapfile -t REMOTE_TESTS < <(
+# while-read loop (not mapfile) so this works on macOS's default bash 3.2.
+REMOTE_TESTS=()
+while IFS= read -r line; do
+  [ -n "$line" ] && REMOTE_TESTS+=("$line")
+done < <(
   git ls-tree -r --name-only "${REMOTE}/${BRANCH}" \
     | grep -E '^tests/test_stage[0-9]+_[a-z0-9_]+\.py$' \
     || true
 )
-FILES+=("${REMOTE_TESTS[@]}")
+if [ "${#REMOTE_TESTS[@]}" -gt 0 ]; then
+  FILES+=("${REMOTE_TESTS[@]}")
+fi
 
 DIRTY=$(git status --porcelain -- "${FILES[@]}" 2>/dev/null | awk '{print $2}')
 if [ -n "$DIRTY" ]; then
