@@ -36,3 +36,7 @@ pytest -v -k "$stage" tests/
 [tasks.all]
 description = "Run tests for every stage."
 run = "pytest -v tests/"
+
+[tasks.sync]
+description = "Pull canonical files from the karnstack template."
+run = "bash .karnstack/sync.sh"
