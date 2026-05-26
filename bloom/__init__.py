@@ -66,3 +66,59 @@ class Filter:
     def k(self) -> int:
         """Number of hash functions per probe."""
         return self._k
+
+    @classmethod
+    def blocked(cls, m: int, k: int) -> "Filter":
+        """Construct a cache-line-blocked filter (Putze-Sanders-Singler 2007).
+
+        A primary hash picks one 512-bit block; all k probes live inside
+        that block. Same add/test signatures as a flat Filter.
+
+        Stage 4: implement this.
+        """
+        # TODO(stage4): build a blocked-layout filter.
+        raise NotImplementedError
+
+    def to_bytes(self) -> bytes:
+        """Serialize the filter's state (m, k, bit array) to bytes.
+
+        Use a fixed little-endian format so two implementations produce
+        byte-equal output for the same state.
+
+        Stage 6: implement this.
+        """
+        # TODO(stage6).
+        raise NotImplementedError
+
+    @classmethod
+    def from_bytes(cls, data: bytes) -> "Filter":
+        """Reverse to_bytes. Returns a filter whose Test agrees with the
+        source for every key.
+
+        Stage 6: implement this.
+        """
+        # TODO(stage6).
+        raise NotImplementedError
+
+    def saturation(self) -> float:
+        """Fraction of bits currently set in the bit array.
+
+        Theoretical: 1 - exp(-k*n/m).
+
+        Stage 6: implement this.
+        """
+        # TODO(stage6).
+        return 0.0
+
+
+def optimal_size(n: int, p: float) -> tuple[int, int]:
+    """Return (m, k) that minimize the false-positive rate for n keys at
+    target rate p. Closed-form bounds:
+
+        m = ceil(-n * ln(p) / (ln 2)^2)
+        k = round((m / n) * ln 2)
+
+    Stage 3: implement this.
+    """
+    # TODO(stage3).
+    return 0, 0
